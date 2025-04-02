@@ -15,3 +15,20 @@ The built-in core ZeroMQ patterns are:
 - Pipeline, which connects nodes in a fan-out/fan-in pattern that can have multiple steps and loops. This is a parallel task distribution and collection pattern.
 
 - Exclusive pair, which connects two sockets exclusively. This is a pattern for connecting two threads in a process, not to be confused with “normal” pairs of sockets.
+
+
+## HWM - high water mark
+- ZMQ uses the concept of HWM (high-water mark) to define the capacity of it's internal pipes. Each connection out of a socket or into a socket has its own pipe and HWM for sending and/or receiving depending on the socket type. Some sockets ( PUB, PUSH, RADIO ) only have send buffers. Some ( SUB, PULL, DISH ) only have receive buffers. Some ( REQ, REP, DEALER, ROUTER, PAIR ) have both send and receive buffers.
+
+- The available socket options are:
+
+  - ZMQ_SNDHWM: Set high water mark for outbound messages (... on the publisher socket )
+   - ZMQ_RCVHWM: Set high water mark for inbound messages (... on the subscriber socket )
+- Both ZMQ_PUB and ZMQ_SUB have the ZMQ_HWM option action set to "Drop" therefore when the limits are reached the memory of the subscriber or the publisher should stop growing, by what amount depends on the ZMQ buffers.
+
+
+## reply envoleop
+- The ZeroMQ reply envelope formally consists of zero or more reply addresses, followed by an empty frame (the envelope delimiter), followed by the message body (zero or more frames).
+
+
+-  let’s say the REQ socket has a 3-byte identity ABC. Internally, this means the ROUTER socket keeps a hash table where it can search for ABC and find the TCP connection for the REQ socket.
